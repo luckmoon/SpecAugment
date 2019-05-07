@@ -42,7 +42,7 @@ from tensorflow.contrib.image import sparse_image_warp
 import numpy as np
 import random
 import matplotlib
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 
@@ -109,6 +109,7 @@ def spec_augment(mel_spectrogram, time_warping_para=80, frequency_masking_para=2
 
     with tf.Session() as sess:
         warped_mel_spectrogram = sess.run(warped_mel_spectrogram_op, feed_dict=feed_dict)
+    sess.close()
 
     warped_mel_spectrogram = warped_mel_spectrogram.reshape([warped_mel_spectrogram.shape[1],
                                                              warped_mel_spectrogram.shape[2]])

@@ -51,16 +51,16 @@ if __name__ == "__main__":
                                                      fmax=8000)
 
     # Show Raw mel-spectrogram
-    spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=mel_spectrogram,
-                                                      title="Raw Mel Spectrogram")
+    # spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=mel_spectrogram,
+    #                                                   title="Raw Mel Spectrogram")
 
-    # Calculate SpecAugment ver.tensorflow
-    warped_masked_spectrogram = spec_augment_tensorflow.spec_augment(mel_spectrogram=mel_spectrogram)
-    # print(warped_masked_spectrogram)
-
-    # Show time warped & masked spectrogram
-    spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=warped_masked_spectrogram,
-                                                      title="tensorflow Warped & Masked Mel Spectrogram")
+    # # Calculate SpecAugment ver.tensorflow
+    # warped_masked_spectrogram = spec_augment_tensorflow.spec_augment(mel_spectrogram=mel_spectrogram)
+    # # print(warped_masked_spectrogram)
+    #
+    # # Show time warped & masked spectrogram
+    # spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=warped_masked_spectrogram,
+    #                                                   title="tensorflow Warped & Masked Mel Spectrogram")
 
     # Calculate SpecAugment ver.pytorch
     warped_masked_spectrogram = spec_augment_pytorch.spec_augment(mel_spectrogram=mel_spectrogram)

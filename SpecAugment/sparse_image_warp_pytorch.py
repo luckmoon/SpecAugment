@@ -178,3 +178,51 @@ def sparse_image_warp(image,
 
     return warped_image, dense_flows
 
+
+def dense_image_warp(image, flow, name='dense_image_warp'):
+  """Image warping using per-pixel flow vectors.
+  Apply a non-linear warp to the image, where the warp is specified by a dense
+  flow field of offset vectors that define the correspondences of pixel values
+  in the output image back to locations in the  source image. Specifically, the
+  pixel value at output[b, j, i, c] is
+  images[b, j - flow[b, j, i, 0], i - flow[b, j, i, 1], c].
+  The locations specified by this formula do not necessarily map to an int
+  index. Therefore, the pixel value is obtained by bilinear
+  interpolation of the 4 nearest pixels around
+  (b, j - flow[b, j, i, 0], i - flow[b, j, i, 1]). For locations outside
+  of the image, we use the nearest pixel values at the image boundary.
+  Args:
+    image: 4-D float `Tensor` with shape `[batch, height, width, channels]`.
+    flow: A 4-D float `Tensor` with shape `[batch, height, width, 2]`.
+    name: A name for the operation (optional).
+    Note that image and flow can be of type tf.half, tf.float32, or tf.float64,
+    and do not necessarily have to be the same type.
+  Returns:
+    A 4-D float `Tensor` with shape`[batch, height, width, channels]`
+      and same type as input image.
+  Raises:
+    ValueError: if height < 2 or width < 2 or the inputs have the wrong number
+                of dimensions.
+  """
+  with ops.name_scope(name):
+    batch_size, height, width, channels = (array_ops.shape(image)[0],
+                                           array_ops.shape(image)[1],
+                                           array_ops.shape(image)[2],
+                                           array_ops.shape(image)[3])
+
+    # The flow is defined on the image grid. Turn the flow into a list of query
+    # points in the grid space.
+    grid_x, grid_y = array_ops.meshgrid(
+        math_ops.range(width), math_ops.range(height))
+    stacked_grid = math_ops.cast(
+        array_ops.stack([grid_y, grid_x], axis=2), flow.dtype)
+    batched_grid = array_ops.expand_dims(stacked_grid, axis=0)
+    query_points_on_grid = batched_grid - flow
+    query_points_flattened = array_ops.reshape(query_points_on_grid,
+                                               [batch_size, height * width, 2])
+    # Compute values at the query points, then reshape the result back to the
+    # image grid.
+    interpolated = _interpolate_bilinear(image, query_points_flattened)
+    interpolated = array_ops.reshape(interpolated,
+                                     [batch_size, height, width, channels])
+    return interpolated

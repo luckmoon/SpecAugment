@@ -37,12 +37,32 @@ SS : Switchboard strong
 
 import librosa
 import librosa.display
-import math
 import numpy as np
 import random
 import matplotlib
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from SpecAugment.sparse_image_warp_zcaceres import sparse_image_warp
+import torch
+
+
+def time_warp(spec, W=5):
+    num_rows = spec.shape[0]
+    spec_len = spec.shape[1]
+
+    y = num_rows // 2
+    horizontal_line_at_ctr = spec[:, y]
+    # assert len(horizontal_line_at_ctr) == spec_len
+
+    point_to_warp = horizontal_line_at_ctr[random.randrange(W, y - W)]
+    # assert isinstance(point_to_warp, torch.Tensor)
+
+    # Uniform distribution from (0,W) with chance to be up to W negative
+    dist_to_warp = random.randrange(-W, W)
+    src_pts = np.array([[[y, point_to_warp]]])
+    dest_pts = np.array([[[y, point_to_warp + dist_to_warp]]])
+    warped_spectro, dense_flows = sparse_image_warp(spec, src_pts, dest_pts)
+    return warped_spectro.squeeze(3)
 
 
 def spec_augment(mel_spectrogram, time_warping_para=80, frequency_masking_para=27,
@@ -73,17 +93,7 @@ def spec_augment(mel_spectrogram, time_warping_para=80, frequency_masking_para=2
     tau = mel_spectrogram.shape[1]
 
     # Step 1 : Time warping (TO DO...)
-    warped_mel_spectrogram = np.zeros(mel_spectrogram.shape,
-                                      dtype=mel_spectrogram.dtype)
-
-    for i in range(v):
-        for j in range(tau):
-            offset_x = 0
-            offset_y = 0
-            if i + offset_y < v:
-                warped_mel_spectrogram[i, j] = mel_spectrogram[(i + offset_y) % v, j]
-            else:
-                warped_mel_spectrogram[i, j] = mel_spectrogram[i, j]
+    warped_mel_spectrogram = time_warp(mel_spectrogram)
 
     # Step 2 : Frequency masking
     for i in range(frequency_mask_num):
