@@ -79,7 +79,7 @@ def spec_augment(mel_spectrogram, time_warping_para=80, frequency_masking_para=2
     location_holder = tf.placeholder(tf.float32, shape=[1, 1, 2])
     destination_holder = tf.placeholder(tf.float32, shape=[1, 1, 2])
 
-    center_position = v/2
+    center_position = v / 2
     random_point = np.random.randint(low=time_warping_para, high=tau - time_warping_para)
     # warping distance chose.
     w = np.random.uniform(low=0, high=time_warping_para)
@@ -103,9 +103,9 @@ def spec_augment(mel_spectrogram, time_warping_para=80, frequency_masking_para=2
                                                      )
 
     # Change warp result's data type to numpy array for masking step.
-    feed_dict = {mel_spectrogram_holder:mel_spectrogram,
-                 location_holder:control_point_locations,
-                 destination_holder:control_point_destination}
+    feed_dict = {mel_spectrogram_holder: mel_spectrogram,
+                 location_holder: control_point_locations,
+                 destination_holder: control_point_destination}
 
     with tf.Session() as sess:
         warped_mel_spectrogram = sess.run(warped_mel_spectrogram_op, feed_dict=feed_dict)
@@ -144,4 +144,3 @@ def visualization_spectrogram(mel_spectrogram, title):
     plt.title(title)
     plt.tight_layout()
     plt.show()
-

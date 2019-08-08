@@ -43,7 +43,7 @@ masking_line_number = args.masking_line_number
 if __name__ == "__main__":
 
     # Step 0 : load audio file, extract mel spectrogram
-    audio, sampling_rate = librosa.load(audio_path)
+    audio, sampling_rate = librosa.load(audio_path, sr=16000)
     mel_spectrogram = librosa.feature.melspectrogram(y=audio,
                                                      sr=sampling_rate,
                                                      n_mels=256,
@@ -62,12 +62,12 @@ if __name__ == "__main__":
     spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=warped_masked_spectrogram,
                                                       title="tensorflow Warped & Masked Mel Spectrogram")
 
-    # Calculate SpecAugment ver.pytorch
-    warped_masked_spectrogram = spec_augment_pytorch.spec_augment(mel_spectrogram=mel_spectrogram)
-    print(warped_masked_spectrogram)
-
-    # Show time warped & masked spectrogram
-    spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=warped_masked_spectrogram,
-                                                      title="pytorch Warped & Masked Mel Spectrogram")
-
+    # # Calculate SpecAugment ver.pytorch
+    # warped_masked_spectrogram = spec_augment_pytorch.spec_augment(mel_spectrogram=mel_spectrogram)
+    # print(warped_masked_spectrogram)
+    #
+    # # Show time warped & masked spectrogram
+    # spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=warped_masked_spectrogram,
+    #                                                   title="pytorch Warped & Masked Mel Spectrogram")
+    #
 
