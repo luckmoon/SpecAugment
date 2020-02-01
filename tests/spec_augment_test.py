@@ -22,7 +22,7 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 parser = argparse.ArgumentParser(description='Spec Augment')
-parser.add_argument('--audio-path', default='../data/61-70968-0002.wav',
+parser.add_argument('--audio-path', default='../data/6818238.wav',
                     help='The audio file.')
 parser.add_argument('--time-warp-para', default=80,
                     help='time warp parameter W')
@@ -43,12 +43,13 @@ masking_line_number = args.masking_line_number
 if __name__ == "__main__":
 
     # Step 0 : load audio file, extract mel spectrogram
-    audio, sampling_rate = librosa.load(audio_path, sr=16000)
+    audio, sampling_rate = librosa.load(audio_path, sr=8000)
     mel_spectrogram = librosa.feature.melspectrogram(y=audio,
                                                      sr=sampling_rate,
                                                      n_mels=256,
                                                      hop_length=128,
                                                      fmax=8000)
+    print(mel_spectrogram.shape)
 
     # Show Raw mel-spectrogram
     spec_augment_tensorflow.visualization_spectrogram(mel_spectrogram=mel_spectrogram,
